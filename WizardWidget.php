@@ -45,9 +45,9 @@ class WizardWidget extends Widget {
 	public $start_step = null;
 
 	/**
-	 * @var string optional final complete step content
+	 * @var object optional final complete step content
 	 */
-	public $complete_content = '';
+	public $complete_step = null;
 
 	/**
 	 * Main entry to execute the widget
@@ -58,7 +58,7 @@ class WizardWidget extends Widget {
 
 		// Wizard content
 		$wizard_line = '';
-		$wizard_line_distribution = round(100/(count($this->steps)+($this->complete_content?1:0)));
+		$wizard_line_distribution = round(100/(count($this->steps)+($this->complete_step ? 1 : 0)));
 		$tab_content = '';
 
 		// Navigation tracker
@@ -113,21 +113,21 @@ class WizardWidget extends Widget {
 		}
 
 		// Add a completed step if defined
-		if ($this->complete_content) {
+		if ($this->complete_step) {
 			// Check if completed tab is set as start_step
 			$class = 'disabled';
 			if ($this->start_step == 'completed') {
 				$class = 'active';
 			}
 			$wizard_line .= '<li role="presentation" class="'.$class.'" style="width:'.$wizard_line_distribution.'%">'.
-			                Html::a('<span class="round-tab"><i class="glyphicon glyphicon-ok"></i></span>', '#complete', [
+			                Html::a('<span class="round-tab"><i class="' . ($this->complete_step['icon'] ? $this->complete_step['icon'] : 'glyphicon glyphicon-ok') . '"></i></span>', '#complete', [
 				                'data-toggle' => 'tab',
 				                'aria-controls' => 'complete',
 				                'role' => 'tab',
-				                'title' => 'Complete',
+				                'title' => $this->complete_step['title'],
 			                ]).
 			                '</li>';
-			$tab_content .= '<div class="tab-pane '.$class.'" role="tabpanel" id="complete">'.$this->complete_content.'</div>';
+			$tab_content .= '<div class="tab-pane '.$class.'" role="tabpanel" id="complete">'.$this->complete_step['content'].'</div>';
 		}
 
 		// Start widget
